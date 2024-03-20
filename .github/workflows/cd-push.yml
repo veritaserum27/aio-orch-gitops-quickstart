@@ -1,0 +1,60 @@
+# Refer to: https://github.com/hashicorp/setup-terraform
+#
+# On a Pull Request that includes changes in the `deploy` directory, run Terraform Plan and append a comment.
+
+name: "CD Push"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'deploy/**'
+
+env:
+  RESOURCE_GROUP_NAME: "${{ secrets.RESOURCE_GROUP_NAME }}"
+  STORAGE_ACCOUNT_NAME: "${{ secrets.STORAGE_ACCOUNT_NAME }}"
+  TFSTATE_CONTAINER_NAME: "${{ secrets.TFSTATE_CONTAINER_NAME }}"
+  TFSTATE_KEY: "${{ secrets.TFSTATE_KEY }}"
+  ARM_CLIENT_ID: "${{ secrets.ARM_CLIENT_ID }}"
+  ARM_CLIENT_SECRET: "${{ secrets.ARM_CLIENT_SECRET }}"
+  ARM_SUBSCRIPTION_ID: "${{ secrets.ARM_SUBSCRIPTION_ID }}"
+  ARM_TENANT_ID: "${{ secrets.ARM_TENANT_ID }}"
+  
+  TF_VAR_name: "${{ secrets.TF_VAR_NAME }}"
+  TF_VAR_location: "${{ secrets.TF_VAR_LOCATION }}"
+
+jobs:
+  terraform:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deploy
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform init
+        id: init
+        run: |-
+          terraform init \
+            -backend-config="resource_group_name=${{ env.RESOURCE_GROUP_NAME }}" \
+            -backend-config="storage_account_name=${{ env.STORAGE_ACCOUNT_NAME }}" \
+            -backend-config="container_name=${{ env.TFSTATE_CONTAINER_NAME }}" \
+            -backend-config="key=${{ env.TFSTATE_KEY }}"
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform apply
+        id: plan
+        run: terraform apply -auto-approve -no-color
