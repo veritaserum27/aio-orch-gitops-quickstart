@@ -5,9 +5,9 @@
 name: "CD Push"
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types:
+      - closed
     paths:
       - 'deploy/**'
 
@@ -26,6 +26,7 @@ env:
 
 jobs:
   terraform:
+    if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true # Only run terraform apply if this push came from a merge to main
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     defaults:
