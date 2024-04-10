@@ -1,7 +1,7 @@
 module "aio_infra" {
   count = var.should_bootstrap_aio ? 1 : 0
 
-  source = "github.com/azure-samples/azure-edge-extensions-aio-iac-terraform//deploy/modules/infra?ref=modules"
+  source = "github.com/azure-samples/azure-edge-extensions-aio-iac-terraform//deploy/modules/infra?ref=main"
 
   name     = var.name
   location = var.location
@@ -14,7 +14,7 @@ module "aio_infra" {
 module "aio_full" {
   count = var.should_bootstrap_aio ? 1 : 0
 
-  source = "github.com/azure-samples/azure-edge-extensions-aio-iac-terraform//deploy/modules/aio-full?ref=modules"
+  source = "github.com/azure-samples/azure-edge-extensions-aio-iac-terraform//deploy/modules/aio-full?ref=main"
 
   name     = var.name
   location = var.location
@@ -25,7 +25,7 @@ module "aio_full" {
 module "opc_plc_sim" {
   count = var.should_bootstrap_aio ? 1 : 0
 
-  source = "github.com/azure-samples/azure-edge-extensions-aio-iac-terraform//deploy/modules/opc-plc-sim?ref=modules"
+  source = "github.com/azure-samples/azure-edge-extensions-aio-iac-terraform//deploy/modules/opc-plc-sim?ref=main"
 
   name     = var.name
   location = var.location
