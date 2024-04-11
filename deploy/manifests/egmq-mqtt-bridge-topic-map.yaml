@@ -1,0 +1,17 @@
+apiVersion: mq.iotoperations.azure.com/v1beta1
+kind: MqttBridgeTopicMap
+metadata:
+  name: egmq-topic-map
+spec:
+  mqttBridgeConnectorRef: egmq-mqtt-bridge
+  routes:
+    - direction: remote-to-local
+      name: cloud-to-edge
+      qos: 1
+      source: "${cloud_to_edge_topic}"
+      target: "${cloud_to_edge_topic_target}"
+    - direction: local-to-remote
+      name: edge-to-cloud
+      qos: 1
+      source: "${edge_to_cloud_topic}"
+      target: "${edge_to_cloud_topic_target}"
